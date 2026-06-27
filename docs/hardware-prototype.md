@@ -64,6 +64,18 @@ GPIO, easier breadboarding, but no mic and no battery charger.
 - **Stage 1 — minimal hardware loop:** XIAO Sense + IR emitter. Capture a JPEG every
   few seconds → POST to the `server/` running on your LAN → fire IR mute on the
   `"mute"` action. Range-test the emitter.
+
+  **When the board arrives, before trusting any classifier numbers:**
+  1. Copy `firmware/include/config.example.h` → `config.h`; fill in Wi-Fi + server URL.
+  2. Point the camera at the real TV, **in the real room with the lights you actually
+     watch in.** The OV2640's exposure is locked to a fixed guess
+     (`CAM_AEC_VALUE = 300`) — it *will* be wrong for your room on the first try.
+  3. Grab a frame, eyeball it: screen blown out / washed white → **lower** `CAM_AEC_VALUE`;
+     too dark to read → **raise** it. Reflash, repeat until the screen content is legible.
+     Keep `CAM_AGC_VALUE` near 0 (gain = noise); only raise it if max exposure is still dark.
+  4. Set `CAM_VFLIP` / `CAM_HMIRROR` if the image is upside-down/mirrored from how you mount it.
+  5. Only *then* run captured OV2640 frames through `server/` — phone-camera frames lie
+     about real sensor quality (glare, banding, exposure). This is the de-risk that matters.
 - **Stage 2 — human bits:** add the encoder for override; bring in the LCD for status.
 - **Stage 3 — untether:** LiPo + charging, then the enclosure (walnut / aluminum /
   3D-printed shells).
