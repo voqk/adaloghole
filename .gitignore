@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Server runtime data (holds the user's API key + settings)
+server/data/
+
+# Secrets / local config
+.env
+.env.local
+firmware/include/config.h
+
+# PlatformIO
+.pio/
+
+# Captured frames / scratch
+frames/
+*.jpg
+*.jpeg
+*.png
+!docs/**/*.png
+
+# OS
+.DS_Store

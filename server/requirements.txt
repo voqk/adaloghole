@@ -1,0 +1,7 @@
+# Use recent versions. anthropic must support output_config structured outputs.
+fastapi
+uvicorn[standard]
+anthropic
+jinja2
+python-multipart      # form posts / file uploads in the admin portal
+pydantic-settings
