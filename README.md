@@ -51,3 +51,10 @@ later step.
 
 Skeletons only. Nothing is implemented yet — see `docs/hardware-prototype.md` for
 the staged build plan.
+
+## License
+
+Code is licensed under the **Apache License 2.0** — see [`LICENSE`](./LICENSE) and
+[`NOTICE`](./NOTICE). The "AdalogHole" name and branding are not covered by the
+license. Hardware/CAD files (added later) will carry their own open-hardware
+license (e.g. CERN-OHL or CC-BY).
