@@ -1,19 +1,82 @@
-<!-- AdalogHole admin portal. [STUB] -->
-<!--
-  TODO: form (POST /admin) with fields:
-    - Anthropic API key (password input)
-    - Model (select: claude-opus-4-8 / claude-sonnet-4-6 / claude-haiku-4-5)
-    - Program description (text)
-    - System prompt (textarea)
-    - Flip threshold (number), Sample interval ms (number)
-  TODO: separate "Test a frame" form (POST /admin/test, file upload) that shows the
-        live {label, confidence, reason} without touching the mute state.
--->
 <!doctype html>
 <html>
-  <head><meta charset="utf-8" /><title>AdalogHole</title></head>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AdalogHole — admin</title>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+      h1 { margin-bottom: 0.25rem; }
+      .state { color: #555; margin-top: 0; }
+      fieldset { border: 1px solid #ccc; border-radius: 6px; margin: 1.5rem 0; padding: 1rem 1.25rem; }
+      legend { font-weight: 600; padding: 0 0.4rem; }
+      label { display: block; margin: 0.75rem 0 0.25rem; font-weight: 600; }
+      input[type="text"], input[type="password"], input[type="number"], select, textarea {
+        width: 100%; box-sizing: border-box; padding: 0.4rem; font-size: 1rem;
+      }
+      textarea { min-height: 9rem; font-family: ui-monospace, monospace; }
+      .hint { font-weight: 400; color: #666; font-size: 0.85rem; }
+      button { margin-top: 1rem; padding: 0.5rem 1rem; font-size: 1rem; cursor: pointer; }
+      .result { background: #f5f5f5; border-radius: 6px; padding: 0.75rem 1rem; margin-top: 1rem; }
+      .result code { font-size: 0.95rem; }
+    </style>
+  </head>
   <body>
-    <h1>AdalogHole — admin (stub)</h1>
-    <p>Not implemented yet.</p>
+    <h1>AdalogHole — admin</h1>
+    <p class="state">Currently muted: <strong>{{ muted }}</strong></p>
+
+    <form method="post" action="/admin">
+      <fieldset>
+        <legend>Settings</legend>
+
+        <label for="api_key">Anthropic API key
+          <span class="hint">— leave blank to keep the existing key</span></label>
+        <input type="password" id="api_key" name="api_key" placeholder="(unchanged)"
+               autocomplete="off" />
+
+        <label for="model">Model</label>
+        <select id="model" name="model">
+          <option value="claude-haiku-4-5"  {% if s.model == "claude-haiku-4-5" %}selected{% endif %}>claude-haiku-4-5 (cheapest — recommended)</option>
+          <option value="claude-sonnet-4-6" {% if s.model == "claude-sonnet-4-6" %}selected{% endif %}>claude-sonnet-4-6 (mid)</option>
+          <option value="claude-opus-4-8"   {% if s.model == "claude-opus-4-8" %}selected{% endif %}>claude-opus-4-8 (most capable, priciest)</option>
+        </select>
+
+        <label for="program">Program description
+          <span class="hint">— what the viewer wants to watch; substituted for {program}</span></label>
+        <input type="text" id="program" name="program" value="{{ s.program }}" />
+
+        <label for="system_prompt">System prompt
+          <span class="hint">— the token {program} is substituted with the description above</span></label>
+        <textarea id="system_prompt" name="system_prompt">{{ s.system_prompt }}</textarea>
+
+        <label for="flip_threshold">Flip threshold
+          <span class="hint">— consecutive same-label frames before muting/unmuting</span></label>
+        <input type="number" id="flip_threshold" name="flip_threshold" min="1" value="{{ s.flip_threshold }}" />
+
+        <label for="sample_interval_ms">Sample interval (ms)
+          <span class="hint">— advertised to the device</span></label>
+        <input type="number" id="sample_interval_ms" name="sample_interval_ms" min="0" value="{{ s.sample_interval_ms }}" />
+
+        <button type="submit">Save settings</button>
+      </fieldset>
+    </form>
+
+    <form method="post" action="/admin/test" enctype="multipart/form-data">
+      <fieldset>
+        <legend>Test a frame</legend>
+        <p class="hint">Upload a saved TV frame to see the live classification. This does
+          not touch the mute state.</p>
+        <input type="file" name="frame" accept="image/*" required />
+        <button type="submit">Classify</button>
+
+        {% if test_result %}
+        <div class="result">
+          <div><strong>label:</strong> <code>{{ test_result.label }}</code></div>
+          <div><strong>confidence:</strong> <code>{{ test_result.confidence }}</code></div>
+          <div><strong>reason:</strong> {{ test_result.reason }}</div>
+        </div>
+        {% endif %}
+      </fieldset>
+    </form>
   </body>
 </html>

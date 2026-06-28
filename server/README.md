@@ -2,7 +2,7 @@
 
 The v0 "brain." Runs on your LAN. Holds the Anthropic key + prompt (set through the
 admin portal), classifies frames the ESP32 POSTs to it, and returns a mute/unmute
-action. **Skeleton only — not implemented yet.**
+action.
 
 ## Layout
 
@@ -15,8 +15,9 @@ action. **Skeleton only — not implemented yet.**
 | `app/routes_device.py` | `POST /classify` — the endpoint the ESP32 talks to. |
 | `app/routes_admin.py` | `GET/POST /admin` — enter key, edit prompt/model/thresholds, live-test a frame. |
 | `templates/admin.html` | The portal page. |
+| `tools/classify_cli.py` | Stage-0: batch-classify saved frames from the command line (no hardware). |
 
-## Run (once implemented)
+## Run
 
 ```sh
 python -m venv .venv && source .venv/bin/activate
@@ -27,10 +28,36 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 # Interactive docs: http://<server-ip>:8000/docs
 ```
 
+> On Debian/Ubuntu, `python -m venv` needs the `python3-venv` package. If it's
+> unavailable, create the venv with `--without-pip` and bootstrap pip with
+> [`get-pip.py`](https://bootstrap.pypa.io/get-pip.py).
+
+First run creates `data/settings.json` (gitignored — it holds your API key). Open the
+admin portal, paste your Anthropic key, set the **program** description, and save.
+
+## Test it without the ESP32 (Stage 0)
+
+The risky part is the vision classifier, and you can validate it with saved frames and
+zero hardware:
+
+```sh
+# One frame, in the browser: upload it at http://<server-ip>:8000/admin (Test a frame)
+
+# A folder of frames, from the CLI (run from server/):
+python -m tools.classify_cli frames/*.jpg
+
+# The full device contract, with curl:
+curl -X POST http://localhost:8000/classify \
+     -H "Content-Type: image/jpeg" --data-binary @frame.jpg
+# -> {"label":"...","confidence":0.0,"reason":"...","action":"none|mute|unmute","muted":false}
+```
+
+Post a commercial frame twice in a row to watch the hysteresis flip (`action` becomes
+`mute` on the 2nd consecutive `commercial` at the default `flip_threshold` of 2).
+
 ## Model / cost note
 
-`app/settings.py` defaults the model to `claude-opus-4-8`. For this frequent,
-simple classification, `claude-sonnet-4-6` and `claude-haiku-4-5` are much cheaper
-and handle it well — switchable in the admin portal. Big cost levers: sample less
-often, downsample the frame, and let the mic "second opinion" gate when to call the
-API at all.
+`app/settings.py` defaults the model to `claude-haiku-4-5` — the cheapest option and
+adequate for this coarse program-vs-commercial call. `claude-sonnet-4-6` and
+`claude-opus-4-8` are also selectable in the admin portal if you want more capability.
+Big cost levers: sample less often and downsample the frame.
