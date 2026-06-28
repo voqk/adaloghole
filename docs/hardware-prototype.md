@@ -37,22 +37,22 @@ GPIO, easier breadboarding, but no mic and no battery charger.
 
 ### Buy now — core loop (camera → classify → mute)
 
-| Item | ~Price | Why |
-| --- | --- | --- |
-| Seeed XIAO ESP32-S3 Sense | $14 | Camera + mic + battery charging. The eye + brain. |
-| Adafruit STEMMA IR emitter | (on hand) | The "thumb." |
-| IR receiver (TSOP38238 / VS1838B) | $2 | **Needed to *learn* the TV/soundbar codes** from the real remote. |
-| Breadboard + jumpers + STEMMA QT/JST cables | ~$10 | Wiring. |
-| microSD card (small) | ~$8 | Buffer frames / log decisions. |
+| Item | ~Price | Status | Why |
+| --- | --- | --- | --- |
+| Seeed XIAO ESP32-S3 Sense | $14 | ✅ ordered | Camera + mic + battery charging. The eye + brain. |
+| Adafruit STEMMA IR emitter | (on hand) | ✅ on hand | The "thumb." |
+| IR receiver (TSOP38238 / VS1838B) | $2 | ✅ ordered | **Needed to *learn* the TV/soundbar codes** from the real remote. |
+| Breadboard + jumpers + STEMMA QT/JST cables | ~$10 | ✅ on hand (cables TBD) | Wiring. |
+| microSD card (small) | ~$8 | ✅ ordered | Buffer frames / log decisions. |
 
 ### Buy soon — human bits + untether
 
-| Item | ~Price | Why |
-| --- | --- | --- |
-| Adafruit I2C STEMMA QT rotary encoder (#5740) + knob | ~$7 | Override knob; 2 pins. (Cheap alt: KY-040, ~$2.) |
-| Status display | — | Reuse LilyGo T-Display-S3, or a small I2C OLED (~$5). |
-| 3.7V LiPo (~1200 mAh, JST-PH) | ~$8 | Cut the cable. (Mind the XIAO's small battery connector.) |
-| High-power IR LED + 2N2222/MOSFET (optional) | ~$2 | If the STEMMA emitter's range disappoints. |
+| Item | ~Price | Status | Why |
+| --- | --- | --- | --- |
+| Adafruit I2C STEMMA QT rotary encoder (#5740) + knob | ~$7 | ✅ ordered | Override knob; 2 pins. (Cheap alt: KY-040, ~$2.) |
+| Status display | — | ✅ ordered | Reuse LilyGo T-Display-S3, or a small I2C OLED (~$5). |
+| 3.7V LiPo (~1200 mAh, JST-PH) | ~$8 | ✅ ordered | Cut the cable. (Mind the XIAO's small battery connector.) |
+| High-power IR LED + 2N2222/MOSFET (optional) | ~$2 | ⬜ optional | If the STEMMA emitter's range disappoints. |
 
 ~$35 to start, ~$60 all-in.
 
