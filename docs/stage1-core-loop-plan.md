@@ -124,6 +124,16 @@ it. Next: Stage M on the Linux laptop.
 **Checkpoint:** on the laptop, `pio --version` works, the board shows up under
 `/dev/`, and `server/.venv` has the deps. All remaining stages run here.
 
+**Status: ✅ mostly done (2026-06-29, on the Linux laptop `xps`, LAN IP
+192.168.1.193).** This repo IS the laptop clone. `server/.venv` recreated with all
+deps (anthropic, fastapi, uvicorn 0.49.0, pydantic-settings, python-multipart).
+PlatformIO Core 6.1.19 installed in an isolated venv `~/.platformio-venv` (no
+sudo / no `pipx` needed) and symlinked into `~/.local/bin` (on PATH) — functionally
+equivalent to the planned `pipx install`. **Two items deferred to Stage D (not
+blocking A/B/C):** (a) `sudo usermod -aG dialout $USER` + re-login — handed to the
+user, needs sudo + a fresh login; (b) the XIAO isn't plugged in yet (no
+`/dev/ttyACM*`).
+
 ---
 
 ## Stage A — Skeleton that compiles (no hardware)
@@ -155,6 +165,15 @@ it. Next: Stage M on the Linux laptop.
 **Checkpoint:** `cd firmware && pio run` builds and links with zero errors. No
 board required. (PlatformIO was installed in Stage M.)
 
+**Status: ✅ done (2026-06-29).** `pio run` → SUCCESS (74s, first build downloads
+toolchain; RAM 7.0%, Flash 9.4%). Wrote: `net.h` (Result struct + 2 signatures per
+the contract), `main.cpp` (full capture→classify→IR→ui loop with a per-loop
+`Serial.printf` verification line), `ir.h`/`ir.cpp` + `ui.h`/`ui.cpp` (compilable
+no-ops — prototypes added to the headers, which previously held only TODO comments,
+so `main.cpp` links), `platformio.ini` (`lib_deps = bblanchon/ArduinoJson`, IR/display
+libs left out), temporary `net.cpp` link stub, and `include/config.h` (copied from
+`config.example.h`, gitignored, placeholders).
+
 ---
 
 ## Stage B — Real networking (`net.cpp`)
@@ -176,6 +195,12 @@ board required. (PlatformIO was installed in Stage M.)
 
 **Checkpoint:** `pio run` still builds. On-device network verification is
 deferred to Stage D (needs the server from Stage C and real creds).
+
+**Status: ✅ done (2026-06-29).** `pio run` → SUCCESS (5.3s incremental; RAM 15.2%,
+Flash 27.5%). `net.cpp` implements `net_connect_wifi()` (STA mode, 20s timeout with
+serial dots) and `net_classify()` (HTTPClient POST `image/jpeg`, ArduinoJson 7
+`JsonDocument` parse, action-string→enum, `ok=false` on any Wi-Fi/HTTP/parse failure
+so the caller holds state). On-device verification still deferred to Stage D.
 
 ---
 
