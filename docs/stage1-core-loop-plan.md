@@ -224,6 +224,16 @@ after Stage A.
 `curl --data-binary @frame.jpg -H 'Content-Type: image/jpeg' http://<lan-ip>:8000/classify`
 returns valid `{label,confidence,reason,action,muted}` JSON.
 
+**Status: ✅ done (2026-06-29).** Server runs on the laptop at
+`192.168.1.193:8000` (`/admin` and `/docs` return 200); the Anthropic `api_key`
+was pasted into the admin portal (model `claude-haiku-4-5`) and persists to the
+gitignored `data/settings.json`. No saved frames were committed to the repo, so
+the `classify_cli` step was skipped — the contract was confirmed two other ways:
+a `curl` POST proved the key authenticates and the endpoint returns the exact
+`{label,confidence,reason,action,muted}` shape, and real OV2640 frames then
+classified correctly once Stage D flashed (live broadcast → `label=program`,
+confidence 0.85).
+
 ---
 
 ## Stage D — Integrate, flash, tune camera (the de-risk)
@@ -248,6 +258,28 @@ Depends on A + B + C green.
 the server classifies real sensor frames correctly across program vs. commercial,
 and `action`/`muted` land back on the device. IR firing is a no-op (expected;
 deferred).
+
+**Status: 🟡 mostly done (2026-06-29).** Flashed and running end-to-end: the
+device captures UXGA frames, POSTs them, and the loop reports `ok=1` while the
+server correctly labels a live broadcast `program` (0.85). Two gotchas resolved
+on first bring-up:
+1. **The XIAO's Wi-Fi antenna ships *detached*.** Until it was found in the
+   packaging and clicked onto the U.FL connector, the board was nearly deaf
+   (RSSI −88, saw only 1 AP) and failed the WPA2 handshake (`status=4`);
+   reattaching took it to −52 and the loop went green. `net.cpp` now logs the
+   Wi-Fi status code and runs a board-side scan on failure, which is what
+   diagnosed this.
+2. **Camera tuned for the room.** `camera.cpp` SVGA→UXGA (1600×1200) + jpeg
+   quality 12→10 for sharper frames; `config.h` `CAM_HMIRROR=1` to un-mirror
+   backwards on-screen text. Exposure left at `CAM_AEC_VALUE=300` — the screen
+   content is legible and not blown out, so no exposure change was needed.
+   A server-side tuning aid (`data/last_frame.jpg` + `last_verdict.json` + a
+   per-classify log line) was added to eyeball frames during this.
+
+**Remaining:** the `program`→`commercial`→`mute` flip has **not** been witnessed
+yet — only `program` has aired so far. Still need a live commercial break to
+confirm `action=mute`/`muted=true` after `flip_threshold` (2) consecutive
+`commercial` frames, then back to `unmute`. IR firing stays a no-op (deferred).
 
 ---
 
