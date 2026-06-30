@@ -51,11 +51,12 @@ bool camera_init() {
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;        // we want a ready-to-POST JPEG
 
-  // SVGA (800x600) is already over-sampled for this task and keeps the request
-  // body + capture time small. Bump to FRAMESIZE_SXGA/UXGA only if you ever need
-  // finer detail. Requires PSRAM (we have it: -DBOARD_HAS_PSRAM).
-  config.frame_size   = FRAMESIZE_SVGA;
-  config.jpeg_quality = 12;                    // 10..12 = good; lower = bigger/better
+  // UXGA (1600x1200) is the OV2640's max — captures the most real detail the
+  // vision API can use (it downscales to ~1568px long edge). SVGA (800x600) is
+  // smaller/cheaper but sits below that, so the model only ever sees 800px of
+  // detail. Requires PSRAM (we have it: -DBOARD_HAS_PSRAM).
+  config.frame_size   = FRAMESIZE_UXGA;
+  config.jpeg_quality = 10;                    // 10..12 = good; lower = bigger/better
   config.fb_count     = 2;                     // double-buffer in PSRAM
   config.fb_location  = CAMERA_FB_IN_PSRAM;
   config.grab_mode    = CAMERA_GRAB_LATEST;    // always hand back the newest frame

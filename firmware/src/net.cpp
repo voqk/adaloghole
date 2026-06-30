@@ -9,19 +9,40 @@
 bool net_connect_wifi() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  Serial.printf("[wifi] connecting to %s", WIFI_SSID);
+  Serial.printf("[wifi] connecting to %s\n", WIFI_SSID);
 
   const uint32_t timeout_ms = 20000;
   uint32_t start = millis();
+  int last_status = -1;
   while (WiFi.status() != WL_CONNECTED && millis() - start < timeout_ms) {
     delay(500);
-    Serial.print('.');
+    int st = WiFi.status();              // 0=IDLE 1=NO_SSID 3=CONNECTED 4=CONNECT_FAILED 6=DISCONNECTED
+    if (st != last_status) { Serial.printf("[wifi] status=%d\n", st); last_status = st; }
   }
 
   bool ok = WiFi.status() == WL_CONNECTED;
-  if (ok) Serial.printf("\n[wifi] connected, ip=%s\n", WiFi.localIP().toString().c_str());
-  else    Serial.println("\n[wifi] FAILED to connect (check creds / 2.4GHz band)");
-  return ok;
+  if (ok) {
+    Serial.printf("[wifi] connected, ip=%s rssi=%d\n",
+                  WiFi.localIP().toString().c_str(), WiFi.RSSI());
+    return true;
+  }
+
+  // Failed: ask the board what IT can see, so we know if this is RX/antenna,
+  // auth, or a power brownout during the handshake.
+  Serial.printf("[wifi] FAILED (last status=%d). Scanning from the board...\n", WiFi.status());
+  int n = WiFi.scanNetworks();
+  Serial.printf("[wifi] board sees %d networks:\n", n);
+  bool saw_target = false;
+  for (int i = 0; i < n; i++) {
+    bool match = WiFi.SSID(i) == WIFI_SSID;
+    if (match) saw_target = true;
+    Serial.printf("   %s%-32s ch=%d rssi=%d enc=%d\n",
+                  match ? "*> " : "   ", WiFi.SSID(i).c_str(),
+                  WiFi.channel(i), WiFi.RSSI(i), WiFi.encryptionType(i));
+  }
+  Serial.printf("[wifi] target SSID visible to board: %s\n", saw_target ? "YES" : "NO");
+  WiFi.scanDelete();
+  return false;
 }
 
 // Map the server's action string onto the enum. Anything unexpected -> NONE.
