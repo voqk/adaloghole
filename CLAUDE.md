@@ -55,3 +55,5 @@ pio device monitor      # serial @ 115200
 ## Build plan (see `docs/hardware-prototype.md`)
 
 Stage 0 (done): validate the vision classifier with saved frames, zero hardware. Stage 1: XIAO Sense + IR emitter → minimal capture→classify→mute loop. Stage 2: add encoder override + LCD. Stage 3: untether (LiPo) + enclosure. The guiding principle: the risky part is the classifier, not the hardware — keep the ESP32 dumb.
+
+**Active work:** the Stage 1 core loop (`config.h → camera_capture → POST /classify → {action, muted}`) is being built as a sequential multi-context handoff — see `docs/stage1-core-loop-plan.md`. Dev + server run on the Linux laptop. Each stage records its checkpoint status in that doc; read it before starting firmware work.
