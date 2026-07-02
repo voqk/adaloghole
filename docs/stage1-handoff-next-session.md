@@ -1,3 +1,8 @@
+> ⚠️ **SUPERSEDED — deferred to Phase ③.** The project moved to a **laptop-first,
+> hardware-last** strategy; see [`architecture.md`](./architecture.md) for the
+> current design and roadmap. This is a stale ESP32-session handoff, kept as
+> history. Do **not** resume from here; start from `architecture.md` §9.
+
 # Stage 1 core loop — session handoff (resume here)
 
 Hand this to the next Claude session. It captures live state after a machine

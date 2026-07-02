@@ -1,3 +1,8 @@
+> ⚠️ **SUPERSEDED — deferred to Phase ③.** The project moved to a **laptop-first,
+> hardware-last** strategy; see [`architecture.md`](./architecture.md) for the
+> current design and roadmap. This ESP32-first plan is kept as reference for
+> **Phase ③** (when the ESP32 becomes the Sensor), not as the active plan.
+
 # AdalogHole — prototype hardware plan
 
 Day-1 plan for getting a working prototype together fast. The guiding principle:

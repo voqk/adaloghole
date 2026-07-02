@@ -1,3 +1,10 @@
+> ⚠️ **SUPERSEDED — deferred to Phase ③.** The project moved to a **laptop-first,
+> hardware-last** strategy; see [`architecture.md`](./architecture.md) for the
+> current design and roadmap. This ESP32 core-loop plan (and its recorded
+> checkpoints) is kept as reference/history for **Phase ③**, not as the active
+> plan. The firmware it describes compiles and ran end-to-end — it is tabled, not
+> discarded.
+
 # AdalogHole — Stage 1 core loop (multi-context handoff plan)
 
 ## Context
