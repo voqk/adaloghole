@@ -4,4 +4,8 @@ uvicorn[standard]
 anthropic
 jinja2
 python-multipart      # form posts / file uploads in the admin portal
-pydantic-settings
+opencv-python-headless  # webcam Sensor (no GUI deps)
+httpx                 # Sensor -> Brain localhost HTTP seam; also the test client
+
+# Dev / test
+pytest

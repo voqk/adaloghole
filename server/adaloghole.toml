@@ -1,0 +1,38 @@
+# AdalogHole role wiring (architecture.md §7). Which implementation fills each
+# role, chosen at startup. Static wiring only — runtime-tunable knobs (sample
+# interval, flip threshold, program) live in data/settings.json, editable from
+# the admin portal; secrets (the Anthropic key) live in the classifier's own
+# gitignored config, never here.
+
+[roles]
+sensor     = "webcam"     # webcam | none
+classifier = "claude"     # claude | static
+brain      = "local"
+actuator   = "none"       # none | lirc   <- flip to "lirc" once the USB-UIRT is set up
+controller = "admin-web"
+
+[transport]
+# The Sensor->Brain seam runs over localhost HTTP even in Phase 1 — it is the
+# first seam to go remote (Phase 3 ESP32), so we keep it honest early.
+sensor   = "localhost-http"
+actuator = "in-process"
+
+[server]
+host = "0.0.0.0"
+port = 8000
+
+[sensor.webcam]
+device = 0          # /dev/videoN index — a USB cam at the TV may not be 0
+autostart = true    # run as a daemon thread in the server process; false = start
+                    # it yourself: python -m app.roles.sensor.webcam
+width = 1280
+height = 720
+jpeg_quality = 85
+
+[actuator.lirc]
+remote = "tv"       # the remote name you gave irrecord (see docs/lirc-setup.md)
+
+[actuator.lirc.codes]
+# Command code_ref -> LIRC key name. Most TVs expose mute as a single toggle key.
+"tv.mute"   = "KEY_MUTE"
+"tv.unmute" = "KEY_MUTE"

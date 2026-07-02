@@ -4,7 +4,7 @@ This is the tunable core. A single odd frame must not flip the TV, so require N
 consecutive same-label frames (flip_threshold) before changing state. "unknown"
 holds the current state.
 
-One shared instance per server (single TV) — see routes_device.py.
+One shared instance per Brain (single TV), wrapped by DecisionStateMachine.
 """
 
 
